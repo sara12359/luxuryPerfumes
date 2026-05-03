@@ -727,6 +727,13 @@ footer {
 }
 
 @media (max-width: 768px) {
+  .nav-links {
+    display: none;
+  }
+  .cart-modal {
+    width: 100%;
+    right: -100%;
+  }
   .form-row {
     flex-direction: column;
   }

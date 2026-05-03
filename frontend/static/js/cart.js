@@ -149,3 +149,18 @@ window.addEventListener('scroll', () => {
         }
     }
 });
+
+document.getElementById('home-contact-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const messageEl = document.getElementById('home-form-message');
+    
+    if (messageEl) {
+        messageEl.style.display = 'block';
+        messageEl.textContent = 'Thank you for your inquiry. Our scent experts will contact you shortly.';
+        e.target.reset();
+        
+        setTimeout(() => {
+            messageEl.style.display = 'none';
+        }, 5000);
+    }
+});
