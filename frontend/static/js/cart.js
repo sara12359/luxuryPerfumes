@@ -99,3 +99,53 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial render
     updateCartUI();
 });
+
+window.filterCategory = function(category) {
+    const cards = document.querySelectorAll('.product-card');
+    const tabs = document.querySelectorAll('.tab-btn');
+    const headers = document.querySelectorAll('.category-header');
+    const grids = document.querySelectorAll('.grid');
+
+    tabs.forEach(tab => {
+        const tabText = tab.textContent.toLowerCase();
+        if (category === 'all') {
+            tab.classList.toggle('active', tabText.includes('all'));
+        } else if (category === 'uni') {
+            tab.classList.toggle('active', tabText.includes('private') || tabText.includes('uni'));
+        } else {
+            tab.classList.toggle('active', tabText.includes(category));
+        }
+    });
+
+    if (category === 'all') {
+        cards.forEach(card => card.style.display = 'block');
+        headers.forEach(h => h.style.display = 'block');
+        grids.forEach(g => g.style.display = 'grid');
+    } else {
+        cards.forEach(card => {
+            const isMatch = card.getAttribute('data-category') === category;
+            card.style.display = isMatch ? 'block' : 'none';
+        });
+        
+        headers.forEach(h => {
+            const isMatch = h.classList.contains(`${category}-header`);
+            h.style.display = isMatch ? 'block' : 'none';
+        });
+
+        grids.forEach(g => {
+            const isMatch = g.classList.contains(`${category}-grid`);
+            g.style.display = isMatch ? 'grid' : 'none';
+        });
+    }
+};
+
+window.addEventListener('scroll', () => {
+    const header = document.querySelector('.header');
+    if (header) {
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    }
+});

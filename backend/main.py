@@ -7,10 +7,10 @@ import os
 app = FastAPI(title="Scent Concierge Backend")
 
 # Mount static files
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "../frontend/static")), name="static")
 
 def get_template(name: str) -> str:
-    path = os.path.join("templates", name)
+    path = os.path.join(os.path.dirname(__file__), "../frontend/templates", name)
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
