@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maison de Parfum | The Story</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="brand">Maison de Parfum</div>
+        <ul class="nav-links">
+            <li><a href="/">The Shop</a></li>
+            <li><a href="/about" class="active">The Story</a></li>
+            <li><a href="/contact">The Atelier</a></li>
+        </ul>
+        <div class="cart-icon" id="cart-icon">
+            <i class="fas fa-shopping-bag"></i>
+            <div class="cart-count" id="cart-count">0</div>
+        </div>
+    </header>
+
+    <section class="story-section">
+        <h2>Our Heritage</h2>
+        <p>Founded in the heart of Grasse in 1892, Maison de Parfum has dedicated over a century to the pursuit of olfactory perfection. Our atelier represents a sanctuary where the rarest botanical essences are transformed into liquid poetry.</p>
+        <p>Each fragrance is a testament to the artisan's touch—blended by hand, aged in dark cellars, and poured into crystal flacons. We source only the most exquisite ingredients: ethically harvested Oud from Southeast Asia, delicate Rose de Mai picked at dawn, and Iris Pallida aged for three years.</p>
+        <p>Our commitment is not merely to create scent, but to evoke emotion, memory, and profound beauty. This is the art of the connoisseur.</p>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Maison de Parfum. All rights reserved.</p>
+    </footer>
+
+    <!-- Cart Modal -->
+    <div class="cart-overlay" id="cart-overlay"></div>
+    <div class="cart-modal" id="cart-modal">
+        <div class="cart-modal-header">
+            <h2>Your Selection</h2>
+            <i class="fas fa-times close-cart" id="close-cart"></i>
+        </div>
+        <div class="cart-items" id="cart-items"></div>
+        <div class="cart-modal-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cart-total-price">$0.00</span>
+            </div>
+            <button class="btn" style="width: 100%;">Checkout</button>
+        </div>
+    </div>
+
+    <!-- AI Concierge Widget -->
+    <div class="chat-widget">
+        <div class="chat-window" id="chat-window">
+            <div class="chat-header">
+                Scent Concierge
+                <i class="fas fa-times close-btn" id="close-chat"></i>
+            </div>
+            <div class="chat-body" id="chat-body">
+                <div class="chat-message bot">Welcome, Guest. I am your Scent Concierge. How may I assist you in discovering your signature fragrance today?</div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chat-input-field" placeholder="Ask about our scents...">
+                <button id="chat-send-btn"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+        <div class="chat-bubble" id="chat-bubble">
+            <i class="fas fa-comment-dots"></i>
+        </div>
+    </div>
+
+    <script src="/static/js/cart.js"></script>
+    <script src="/static/js/chat.js"></script>
+</body>
+</html>
