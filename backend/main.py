@@ -4,6 +4,10 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import os
 import google.generativeai as genai
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Configure Gemini
 api_key = os.environ.get("GOOGLE_API_KEY")
