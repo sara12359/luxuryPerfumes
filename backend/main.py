@@ -3,6 +3,19 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import os
+import google.generativeai as genai
+
+# Configure Gemini
+api_key = os.environ.get("GOOGLE_API_KEY")
+if api_key:
+    genai.configure(api_key=api_key)
+    # Using gemini-1.5-flash for cost-efficiency (consuming 'some' credits wisely)
+    model = genai.GenerativeModel(
+        model_name="gemini-1.5-flash",
+        system_instruction="You are the 'Scent Concierge' for a ultra-luxury perfume atelier called 'Maison de Parfum'. Your tone is extremely formal, sophisticated, and helpful. You are an expert in niche fragrances, ingredients like Oud, Damask Rose, and rare Saffron. Keep your responses concise, evocative, and luxurious. Refer to the user as 'Guest'."
+    )
+else:
+    model = None
 
 app = FastAPI(title="Scent Concierge Backend")
 
@@ -13,6 +26,10 @@ def get_template(name: str) -> str:
     path = os.path.join(os.path.dirname(__file__), "../frontend/templates", name)
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}
 
 @app.get("/", response_class=HTMLResponse)
 async def read_shop():
@@ -40,18 +57,17 @@ class ChatMessage(BaseModel):
 
 @app.post("/chat")
 async def chat_concierge(chat: ChatMessage):
-    user_message = chat.message.lower()
-    response_text = ""
+    user_message = chat.message
     
-    if "oud" in user_message or "noir" in user_message:
-         response_text = "Guest, our 'Oud Noir' balances top notes of Bergamot with a deep Saffron heart. It is truly a masterpiece for the Connoisseur."
-    elif "floral" in user_message or "rose" in user_message:
-         response_text = "Ah, you seek the delicate embrace of flowers. I recommend our 'Rose de Mai', an exquisite blend of Damascus Rose and rare vanilla orchids."
-    elif "price" in user_message or "cost" in user_message:
-         response_text = "Our creations are an investment in olfactory art. Prices reflect the rarity of our ingredients, ranging from $300 to $1200 per flacon."
-    elif "hello" in user_message or "hi" in user_message:
-         response_text = "Welcome, Guest. I am your Scent Concierge. How may I assist you in discovering your signature fragrance today?"
-    else:
-         response_text = "An intriguing inquiry, Guest. Our Atelier prides itself on bespoke experiences. Perhaps you would enjoy exploring 'L'Élixir Doré', a scent that transcends words."
+    if not model:
+        # Fallback if API key is not configured
+        return {"reply": "Guest, my advanced olfactory analysis is currently being refined in the Atelier. How may I assist you with our current collection in the meantime?"}
+
+    try:
+        response = model.generate_content(user_message)
+        response_text = response.text.strip()
+    except Exception as e:
+        print(f"Gemini API Error: {e}")
+        response_text = "Guest, I am experiencing a brief moment of reflection. Please, tell me more about the scents that move you."
          
     return {"reply": response_text}
