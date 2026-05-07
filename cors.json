@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["https://luxury-perfumes-517939233541.us-central1.run.app"],
+    "method": ["GET", "HEAD", "PUT", "POST", "OPTIONS"],
+    "responseHeader": ["Content-Type", "Access-Control-Allow-Origin", "x-goog-resumable", "x-goog-meta-*"],
+    "maxAgeSeconds": 3600
+  }
+]

@@ -5,6 +5,11 @@ from pydantic import BaseModel
 import os
 import google.generativeai as genai
 from dotenv import load_dotenv
+from uuid import uuid4
+from typing import Dict
+
+# Storage helper (generates signed upload URLs)
+from . import storage as storage_helper
 
 # Load environment variables from .env file
 load_dotenv()
@@ -80,3 +85,29 @@ async def chat_concierge(chat: ChatMessage):
         response_text = "Guest, I am experiencing a brief moment of reflection. Please, tell me more about the scents that move you."
          
     return {"reply": response_text}
+
+
+@app.post("/generate-upload-url")
+async def generate_upload_url(payload: Dict):
+    """Generate a signed upload URL for direct browser upload.
+
+    Expects JSON payload: {"filename": "originalname.jpg", "content_type": "image/jpeg"}
+    Returns: {"url": signedPutUrl, "public_url": publicUrl, "blob_name": blobName}
+    """
+    filename = payload.get("filename") if isinstance(payload, dict) else None
+    content_type = payload.get("content_type") if isinstance(payload, dict) else "application/octet-stream"
+
+    bucket = os.environ.get("GCS_BUCKET")
+    if not bucket:
+        return JSONResponse(status_code=500, content={"error": "GCS_BUCKET not configured on server"})
+
+    # create a unique blob name to avoid collisions
+    ext = os.path.splitext(filename)[1] if filename and "." in filename else ""
+    blob_name = f"uploads/{uuid4().hex}{ext}"
+
+    try:
+        signed = storage_helper.generate_signed_upload_url(bucket, blob_name, content_type=content_type, expiration_minutes=15)
+        return JSONResponse(content=signed)
+    except Exception as e:
+        print(f"Storage error: {e}")
+        return JSONResponse(status_code=500, content={"error": "failed to generate upload URL"})
