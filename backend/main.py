@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, Form, UploadFile, File
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -111,3 +111,25 @@ async def generate_upload_url(payload: Dict):
     except Exception as e:
         print(f"Storage error: {e}")
         return JSONResponse(status_code=500, content={"error": "failed to generate upload URL"})
+
+
+@app.post("/upload-image")
+async def upload_image(file: UploadFile = File(...)):
+    bucket = os.environ.get("GCS_BUCKET")
+    if not bucket:
+        return JSONResponse(status_code=500, content={"error": "GCS_BUCKET not configured on server"})
+
+    ext = os.path.splitext(file.filename)[1] if file.filename and "." in file.filename else ""
+    blob_name = f"uploads/{uuid4().hex}{ext}"
+
+    try:
+        result = storage_helper.upload_file_to_bucket(
+            bucket,
+            blob_name,
+            file.file,
+            content_type=file.content_type or "application/octet-stream",
+        )
+        return JSONResponse(content=result)
+    except Exception as e:
+        print(f"Upload error: {type(e).__name__}: {e}")
+        return JSONResponse(status_code=500, content={"error": "failed to upload image"})

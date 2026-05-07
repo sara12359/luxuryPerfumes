@@ -1,5 +1,4 @@
 from google.cloud import storage
-import os
 from datetime import timedelta
 
 
@@ -22,3 +21,12 @@ def generate_signed_upload_url(bucket_name: str, blob_name: str, content_type: s
 
     public_url = f"https://storage.googleapis.com/{bucket_name}/{blob_name}"
     return {"url": url, "public_url": public_url, "blob_name": blob_name}
+
+
+def upload_file_to_bucket(bucket_name: str, blob_name: str, file_obj, content_type: str = "application/octet-stream"):
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+    blob.upload_from_file(file_obj, content_type=content_type, rewind=True)
+    public_url = f"https://storage.googleapis.com/{bucket_name}/{blob_name}"
+    return {"public_url": public_url, "blob_name": blob_name}
