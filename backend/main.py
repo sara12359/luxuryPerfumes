@@ -13,9 +13,9 @@ load_dotenv()
 api_key = os.environ.get("GOOGLE_API_KEY")
 if api_key:
     genai.configure(api_key=api_key)
-    # Using gemini-1.5-flash for cost-efficiency (consuming 'some' credits wisely)
+    # Using gemini-flash-latest for maximum stability and availability
     model = genai.GenerativeModel(
-        model_name="gemini-1.5-flash",
+        model_name="gemini-flash-latest",
         system_instruction="You are the 'Scent Concierge' for a ultra-luxury perfume atelier called 'Maison de Parfum'. Your tone is extremely formal, sophisticated, and helpful. You are an expert in niche fragrances, ingredients like Oud, Damask Rose, and rare Saffron. Keep your responses concise, evocative, and luxurious. Refer to the user as 'Guest'."
     )
 else:
@@ -69,9 +69,14 @@ async def chat_concierge(chat: ChatMessage):
 
     try:
         response = model.generate_content(user_message)
-        response_text = response.text.strip()
+        # Check if the response was blocked or empty
+        if response and hasattr(response, 'text') and response.text:
+            response_text = response.text.strip()
+        else:
+            response_text = "Guest, our Atelier's secrets are vast. Perhaps you could ask me about our specific ingredients like Oud or Rose?"
     except Exception as e:
-        print(f"Gemini API Error: {e}")
+        print(f"Gemini API Error Type: {type(e).__name__}")
+        print(f"Gemini API Error Message: {str(e)}")
         response_text = "Guest, I am experiencing a brief moment of reflection. Please, tell me more about the scents that move you."
          
     return {"reply": response_text}
